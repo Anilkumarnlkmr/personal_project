@@ -1,13 +1,13 @@
-import logo from './logo.svg';
-import './App.css';
+import * as React from 'react';
+import Tables from './tables.tsx';
 
 function App() {
   return (
-    <div className="App">
-      
-
-      
-    </div>
+    <>
+      <div className="App">
+        <Tables />
+      </div>
+    </>
   );
 }
 
