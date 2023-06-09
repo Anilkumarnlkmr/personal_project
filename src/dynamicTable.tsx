@@ -27,9 +27,7 @@ function createData(
 }
 
 
-export default function ColumnGroupingTable(props) {
-    console.log('anil',props);
-    
+export default function ColumnGroupingTable(props) {    
   const [page, setPage] = React.useState(0);
 
   const [rows, setrows] = React.useState([]);
@@ -48,26 +46,16 @@ export default function ColumnGroupingTable(props) {
 
   return (
     <Paper sx={{ width: "100%" }}>
-      <TableContainer sx={{ maxHeight: '95vh' }}>
+        {/* <h4>{props.tableType ? props.tableType : ''} {'/'} {props.listType ? props.listType : ''}</h4> */}
+      <TableContainer sx={{ maxHeight: '86vh' }}>
         <Table stickyHeader aria-label="sticky table">
           <TableHead>
-            <TableRow>
-              <TableCell align="center" colSpan={3}>
-                Raw Data
-              </TableCell>
-              <TableCell align="center" colSpan={3}>
-                Application
-              </TableCell>
-              <TableCell align="center" colSpan={3}>
-                Resources
-              </TableCell>
-            </TableRow>
             <TableRow>
               {props.columnProps && props.columnProps.map((column) => (                
                 <TableCell
                   key={column.id}
                   align={column.align}
-                  style={{ top: 57, minWidth: column.minWidth }}
+                  style={{ top: 0, minWidth: column.minWidth }}
                 >
                   {column.label}
                 </TableCell>
@@ -78,19 +66,27 @@ export default function ColumnGroupingTable(props) {
             {props.data && props.data
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((row) => {
+                
                 return (
                   <TableRow hover role="checkbox" tabIndex={-1} >
                     {props && props.columnProps && props.columnProps.map((column) => {
                       const value = row[column.id];
+                      
                       return (
                         <TableCell key={column.id} align={column.align}>
                           {column.format && typeof value === "number"
                             ? column.format(value)
+                            : typeof value === "object" ? <>
+                                <h5 style={{margin:'unset'}}>app-name : {'anil'}</h5>
+                                <h5 style={{margin:'unset'}}>app-name :{'kumar'}</h5>
+                                <h5 style={{margin:'unset'}}>app-name :{'kumar'}</h5>
+                            </>
                             : value}
                         </TableCell>
                       );
                     })}
                   </TableRow>
+                  
                 );
               })}
           </TableBody>
