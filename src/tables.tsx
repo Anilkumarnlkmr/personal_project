@@ -1,14 +1,7 @@
 import * as React from 'react';
 import './App.css';
-// import Raw from "../src/component/raw";
 import ColumnGroupingTable from './dynamicTable.tsx';
-import { Tabs, Box, Tab, Modal, List, ListItem, IconButton } from '@mui/material';
-
-interface TabPanelProps {
-    children?: React.ReactNode;
-    index: number;
-    value: number;
-}
+import { Tabs, Box, Tab, Modal, List, ListItem } from '@mui/material';
 
 interface Column {
     id: 'ConsumedQuantity' | 'Cost' | "Date" | 'Location' | "MeterCategory" | "ResourceGroup" | 'ResourceLocation' | "ServiceName" | "Tags" | "UnitOfMeasure";
@@ -29,28 +22,29 @@ const style = {
     boxShadow: 24,
     p: 4,
 };
- interface DataArray {
-    ConsumedQuantity : String,
+interface DataArray {
+    ConsumedQuantity: String,
     Cost: String,
-    Date : String,
-    InstanceId : String,
-    Location : String,
-    MeterCategory:String,
-    ResourceGroup:String,
-    ResourceLocation:String,
-    ServiceName:String,
-    Tags:{},
-    UnitOfMeasure:String,
- }
+    Date: String,
+    InstanceId: String,
+    Location: String,
+    MeterCategory: String,
+    ResourceGroup: String,
+    ResourceLocation: String,
+    ServiceName: String,
+    Tags: {},
+    UnitOfMeasure: String,
+}
 
- 
+
 function Tables() {
     const [value, setValue] = React.useState<number>(0);
     const [open, setOpen] = React.useState<boolean>(false)
     const [data, setData] = React.useState<DataArray[]>([]);
     const [list, setList] = React.useState<string[]>([])
     const [listValue, setListValue] = React.useState<string>('')
-    const [col, setCol] = React.useState<Column[]>([
+    // Header labels object 
+    const [col] = React.useState<Column[]>([
         { id: "ConsumedQuantity", label: "Consumed Quantity", minWidth: 100 },
         { id: "Cost", label: "Cost", minWidth: 100, format: (value: number) => value.toFixed(2) },
         {
@@ -108,18 +102,18 @@ function Tables() {
             format: (value: number) => value.toFixed(2)
         }
     ])
-
+    // On Top tabs changes event
     const handleChange = (event: React.SyntheticEvent, newValue: number) => {
         setValue(newValue);
         setOpen(newValue ? true : false)
     };
-
     React.useEffect(() => {
         switch (value) {
             case 0:
                 fetch("https://engineering-task.elancoapps.com/api/raw")
                     .then(res => res.json())
                     .then(json => setData(json))
+                break;
             case 1:
                 fetch("https://engineering-task.elancoapps.com/api/applications")
                     .then(res => res.json())
@@ -129,7 +123,7 @@ function Tables() {
                 fetch("https://engineering-task.elancoapps.com/api/resources")
                     .then(res => res.json())
                     .then(json => setList(json))
-
+                break;
             default:
                 break;
         }
@@ -158,6 +152,7 @@ function Tables() {
             </Box>
             {data.length && <ColumnGroupingTable columnProps={col ? col : ''} data={data} listType={value ? listValue : ''} tableType={value ? 'Raw' : value === 1 ? 'Application' : 'Resources'} />}
         </div>
+        {/* PopUp for List of data displaying Resources or application */}
         <Modal
             open={open}
             onClose={() => setOpen(false)}
@@ -177,20 +172,15 @@ function Tables() {
                 }}>
                     {list && list.map((value) => (
                         <ListItem
+                            style={{ cursor: 'pointer' }}
                             key={value}
                             disableGutters
                             onClick={() => {
                                 setListValue(value)
                                 setOpen(false)
                             }}
-                            secondaryAction={
-                                <IconButton aria-label="comment">
-                                    {/* <CommentIcon /> */}
-                                </IconButton>
-                            }
                         >
                             {value}
-                            {/* <ListItemText primary={value}    /> */}
                         </ListItem>
                     ))}
                 </List>

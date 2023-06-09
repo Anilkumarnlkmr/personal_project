@@ -8,14 +8,6 @@ import TableHead from "@mui/material/TableHead";
 import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
 
-interface Data {
-    name: string;
-    code: string;
-    population: number;
-    size: number;
-    density: number;
-}
-
 export default function ColumnGroupingTable(props) {
     const [page, setPage] = React.useState<number>(0);
     const [rowsPerPage, setRowsPerPage] = React.useState<number>(10);
@@ -31,7 +23,6 @@ export default function ColumnGroupingTable(props) {
 
     return (
         <Paper sx={{ width: "100%" }}>
-            {/* <h4>{props.tableType ? props.tableType : ''} {'/'} {props.listType ? props.listType : ''}</h4> */}
             <TableContainer sx={{ maxHeight: '86vh' }}>
                 <Table stickyHeader aria-label="sticky table">
                     <TableHead>
@@ -40,7 +31,7 @@ export default function ColumnGroupingTable(props) {
                                 <TableCell
                                     key={column.id}
                                     align={column.align}
-                                    style={{ top: 0, minWidth: column.minWidth, backgroundColor:'#96d2e7ba' }}
+                                    style={{ top: 0, minWidth: column.minWidth, backgroundColor: '#96d2e7ba' }}
                                 >
                                     {column.label}
                                 </TableCell>
@@ -53,7 +44,7 @@ export default function ColumnGroupingTable(props) {
                             .map((row) => {
 
                                 return (
-                                    <TableRow hover role="checkbox" tabIndex={-1} >
+                                    <TableRow hover role="checkbox" tabIndex={-1} key={row.id} >
                                         {props && props.columnProps && props.columnProps.map((column) => {
                                             const value = row[column.id];
 
@@ -62,7 +53,6 @@ export default function ColumnGroupingTable(props) {
                                                     {column.format && typeof value === "number"
                                                         ? column.format(value)
                                                         : typeof value === "object" ? <>
-                                                        {console.log('anil',Object.keys(value))}
                                                             <h5 style={{ margin: 'unset' }}>{Object.keys(value)[0]} : {value[Object.keys(value)[0]]}</h5>
                                                             <h5 style={{ margin: 'unset' }}>{Object.keys(value)[1]} :{value[Object.keys(value)[1]]}</h5>
                                                             <h5 style={{ margin: 'unset' }}>{Object.keys(value)[2]} :{value[Object.keys(value)[2]]}</h5>
