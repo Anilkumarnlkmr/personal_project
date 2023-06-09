@@ -9,98 +9,84 @@ import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
 
 interface Data {
-  name: string;
-  code: string;
-  population: number;
-  size: number;
-  density: number;
+    name: string;
+    code: string;
+    population: number;
+    size: number;
+    density: number;
 }
 
-function createData(
-  name: string,
-  code: string,
-  population: number,
-  size: number
-): Data {
-  const density = population / size;
-  return { name, code, population, size, density };
-}
+export default function ColumnGroupingTable(props) {
+    const [page, setPage] = React.useState<number>(0);
+    const [rowsPerPage, setRowsPerPage] = React.useState<number>(10);
 
+    const handleChangePage = (event: unknown, newPage: number) => {
+        setPage(newPage);
+    };
 
-export default function ColumnGroupingTable(props) {    
-  const [page, setPage] = React.useState(0);
+    const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setRowsPerPage(+event.target.value);
+        setPage(0);
+    };
 
-  const [rows, setrows] = React.useState([]);
-  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+    return (
+        <Paper sx={{ width: "100%" }}>
+            {/* <h4>{props.tableType ? props.tableType : ''} {'/'} {props.listType ? props.listType : ''}</h4> */}
+            <TableContainer sx={{ maxHeight: '86vh' }}>
+                <Table stickyHeader aria-label="sticky table">
+                    <TableHead>
+                        <TableRow>
+                            {props.columnProps && props.columnProps.map((column) => (
+                                <TableCell
+                                    key={column.id}
+                                    align={column.align}
+                                    style={{ top: 0, minWidth: column.minWidth, backgroundColor:'#96d2e7ba' }}
+                                >
+                                    {column.label}
+                                </TableCell>
+                            ))}
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {props.data && props.data
+                            .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                            .map((row) => {
 
-  const handleChangePage = (event: unknown, newPage: number) => {
-    setPage(newPage);
-  };
+                                return (
+                                    <TableRow hover role="checkbox" tabIndex={-1} >
+                                        {props && props.columnProps && props.columnProps.map((column) => {
+                                            const value = row[column.id];
 
-  const handleChangeRowsPerPage = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    setRowsPerPage(+event.target.value);
-    setPage(0);
-  };
+                                            return (
+                                                <TableCell key={column.id} align={column.align}>
+                                                    {column.format && typeof value === "number"
+                                                        ? column.format(value)
+                                                        : typeof value === "object" ? <>
+                                                        {console.log('anil',Object.keys(value))}
+                                                            <h5 style={{ margin: 'unset' }}>{Object.keys(value)[0]} : {value[Object.keys(value)[0]]}</h5>
+                                                            <h5 style={{ margin: 'unset' }}>{Object.keys(value)[1]} :{value[Object.keys(value)[1]]}</h5>
+                                                            <h5 style={{ margin: 'unset' }}>{Object.keys(value)[2]} :{value[Object.keys(value)[2]]}</h5>
+                                                        </>
+                                                            : value}
+                                                </TableCell>
+                                            );
+                                        })}
+                                    </TableRow>
 
-  return (
-    <Paper sx={{ width: "100%" }}>
-        {/* <h4>{props.tableType ? props.tableType : ''} {'/'} {props.listType ? props.listType : ''}</h4> */}
-      <TableContainer sx={{ maxHeight: '86vh' }}>
-        <Table stickyHeader aria-label="sticky table">
-          <TableHead>
-            <TableRow>
-              {props.columnProps && props.columnProps.map((column) => (                
-                <TableCell
-                  key={column.id}
-                  align={column.align}
-                  style={{ top: 0, minWidth: column.minWidth }}
-                >
-                  {column.label}
-                </TableCell>
-              ))}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {props.data && props.data
-              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((row) => {
-                
-                return (
-                  <TableRow hover role="checkbox" tabIndex={-1} >
-                    {props && props.columnProps && props.columnProps.map((column) => {
-                      const value = row[column.id];
-                      
-                      return (
-                        <TableCell key={column.id} align={column.align}>
-                          {column.format && typeof value === "number"
-                            ? column.format(value)
-                            : typeof value === "object" ? <>
-                                <h5 style={{margin:'unset'}}>app-name : {'anil'}</h5>
-                                <h5 style={{margin:'unset'}}>app-name :{'kumar'}</h5>
-                                <h5 style={{margin:'unset'}}>app-name :{'kumar'}</h5>
-                            </>
-                            : value}
-                        </TableCell>
-                      );
-                    })}
-                  </TableRow>
-                  
-                );
-              })}
-          </TableBody>
-        </Table>
-      </TableContainer>
-      <TablePagination
-        rowsPerPageOptions={[10, 25, 100]}
-        component="div"
-        count={props.data.length}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onPageChange={handleChangePage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
-      />
-    </Paper>
-  );
+                                );
+                            })}
+                    </TableBody>
+                </Table>
+            </TableContainer>
+            <TablePagination
+                rowsPerPageOptions={[10, 25, 100]}
+                component="div"
+                count={props.data.length}
+                rowsPerPage={rowsPerPage}
+                page={page}
+                onPageChange={handleChangePage}
+                onRowsPerPageChange={handleChangeRowsPerPage}
+            />
+        </Paper>
+    );
 }

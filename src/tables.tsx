@@ -2,7 +2,7 @@ import * as React from 'react';
 import './App.css';
 // import Raw from "../src/component/raw";
 import ColumnGroupingTable from './dynamicTable.tsx';
-import { Tabs, Box, Tab, Modal, Typography, List, ListItem, ListItemText, IconButton } from '@mui/material';
+import { Tabs, Box, Tab, Modal, List, ListItem, IconButton } from '@mui/material';
 
 interface TabPanelProps {
     children?: React.ReactNode;
@@ -11,7 +11,7 @@ interface TabPanelProps {
 }
 
 interface Column {
-    id: 'ConsumedQuantity' | 'Cost' | "Date" | 'Location' | "MeterCategory" | "ResourceGroup" | 'ResourceLocation' | "ServiceName" | "Tag" | "UnitOfMeasure";
+    id: 'ConsumedQuantity' | 'Cost' | "Date" | 'Location' | "MeterCategory" | "ResourceGroup" | 'ResourceLocation' | "ServiceName" | "Tags" | "UnitOfMeasure";
     label: string;
     minWidth?: number;
     align?: "right";
@@ -29,16 +29,30 @@ const style = {
     boxShadow: 24,
     p: 4,
 };
+ interface DataArray {
+    ConsumedQuantity : String,
+    Cost: String,
+    Date : String,
+    InstanceId : String,
+    Location : String,
+    MeterCategory:String,
+    ResourceGroup:String,
+    ResourceLocation:String,
+    ServiceName:String,
+    Tags:{},
+    UnitOfMeasure:String,
+ }
 
-
-function Tables(props: TabPanelProps) {
-    const [open, setOpen] = React.useState(false)
-    const [data, setData] = React.useState([]);
-    const [list, setList] = React.useState([])
-    const [listValue, setListValue] = React.useState('')
-    const [col,setCol] = React.useState( [
+ 
+function Tables() {
+    const [value, setValue] = React.useState<number>(0);
+    const [open, setOpen] = React.useState<boolean>(false)
+    const [data, setData] = React.useState<DataArray[]>([]);
+    const [list, setList] = React.useState<string[]>([])
+    const [listValue, setListValue] = React.useState<string>('')
+    const [col, setCol] = React.useState<Column[]>([
         { id: "ConsumedQuantity", label: "Consumed Quantity", minWidth: 100 },
-        { id: "Cost", label: "Cost", minWidth: 100 ,format: (value: number) => value.toFixed(2)},
+        { id: "Cost", label: "Cost", minWidth: 100, format: (value: number) => value.toFixed(2) },
         {
             id: "Date",
             label: "Date",
@@ -83,9 +97,8 @@ function Tables(props: TabPanelProps) {
         {
             id: "Tags",
             label: "Tags",
-            minWidth: 100,
+            minWidth: 170,
             // align: "right",
-            format: ''
         },
         {
             id: "UnitOfMeasure",
@@ -96,17 +109,12 @@ function Tables(props: TabPanelProps) {
         }
     ])
 
-
-    const [value, setValue] = React.useState(0);
-
     const handleChange = (event: React.SyntheticEvent, newValue: number) => {
         setValue(newValue);
-        // setCol(rowcol)
         setOpen(newValue ? true : false)
     };
 
     React.useEffect(() => {
-        // if(open === true ) {
         switch (value) {
             case 0:
                 fetch("https://engineering-task.elancoapps.com/api/raw")
@@ -125,20 +133,19 @@ function Tables(props: TabPanelProps) {
             default:
                 break;
         }
-        // }
     }, [value])
 
-    React.useEffect(()=>{        
-        if(value === 1) {
+    React.useEffect(() => {
+        if (value === 1) {
             fetch(`https://engineering-task.elancoapps.com/api/applications/${listValue}`)
-                    .then(res => res.json())
-                    .then(json => setData(json))
-        } else if(value === 2) {
+                .then(res => res.json())
+                .then(json => setData(json))
+        } else if (value === 2) {
             fetch(`https://engineering-task.elancoapps.com/api/resources/${listValue}`)
-            .then(res => res.json())
-            .then(json => setData(json))
+                .then(res => res.json())
+                .then(json => setData(json))
         }
-    },[listValue])
+    }, [listValue])
 
     return (<>
         <div className="App">
@@ -149,7 +156,7 @@ function Tables(props: TabPanelProps) {
                     <Tab label="Recources" />
                 </Tabs>
             </Box>
-            {data.length && <ColumnGroupingTable columnProps={col ? col : ''} data={data} listType={value ? listValue: ''} tableType={value ? 'Raw' : value === 1 ? 'Application' : 'Resources'} />}
+            {data.length && <ColumnGroupingTable columnProps={col ? col : ''} data={data} listType={value ? listValue : ''} tableType={value ? 'Raw' : value === 1 ? 'Application' : 'Resources'} />}
         </div>
         <Modal
             open={open}
@@ -158,6 +165,7 @@ function Tables(props: TabPanelProps) {
             aria-describedby="modal-modal-description"
         >
             <Box sx={style}>
+                <h3>{'Select Any '}{value === 1 ? 'Application' : 'Resources'}</h3>
                 <List sx={{
                     width: '100%',
                     maxWidth: 360,
@@ -171,8 +179,10 @@ function Tables(props: TabPanelProps) {
                         <ListItem
                             key={value}
                             disableGutters
-                            onClick={()=>{setListValue(value)
-                                setOpen(false)}}
+                            onClick={() => {
+                                setListValue(value)
+                                setOpen(false)
+                            }}
                             secondaryAction={
                                 <IconButton aria-label="comment">
                                     {/* <CommentIcon /> */}
